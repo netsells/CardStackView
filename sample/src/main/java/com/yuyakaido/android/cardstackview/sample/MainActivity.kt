@@ -70,6 +70,10 @@ class MainActivity : AppCompatActivity(), CardStackListener {
         Log.d("CardStackView", "onCardDisappeared: ($position) ${textView.text}")
     }
 
+    override fun shouldCardDismiss(position: Int, direction: Direction?): Boolean {
+        return true
+    }
+
     private fun setupNavigation() {
         // Toolbar
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
