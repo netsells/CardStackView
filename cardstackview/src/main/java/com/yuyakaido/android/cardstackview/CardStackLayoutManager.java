@@ -29,6 +29,8 @@ public class CardStackLayoutManager
     private CardStackSetting setting = new CardStackSetting();
     private CardStackState state = new CardStackState();
 
+    public boolean freeze = false;
+
     public CardStackLayoutManager(Context context) {
         this(context, CardStackListener.DEFAULT);
     }
@@ -70,6 +72,10 @@ public class CardStackLayoutManager
     @Override
     public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State s) {
         if (state.topPosition == getItemCount()) {
+            return 0;
+        }
+
+        if (freeze) {
             return 0;
         }
 
@@ -118,6 +124,10 @@ public class CardStackLayoutManager
     @Override
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State s) {
         if (state.topPosition == getItemCount()) {
+            return 0;
+        }
+
+        if (freeze) {
             return 0;
         }
 
@@ -253,6 +263,12 @@ public class CardStackLayoutManager
         state.height = getHeight();
 
         if (state.isSwipeCompleted()) {
+
+            final Direction direction = state.getDirection();
+            if (!listener.shouldCardDismiss(state.topPosition, direction)) {
+                return;
+            }
+
             // ■ 概要
             // スワイプが完了したタイミングで、スワイプ済みのViewをキャッシュから削除する
             // キャッシュの削除を行わないと、次回更新時にスワイプ済みのカードが表示されてしまう
@@ -266,8 +282,6 @@ public class CardStackLayoutManager
             // 5. カードを1枚だけ画面に表示する（このカードをBとする）
             // 6. ページング完了後はBが表示されるはずが、Aが画面に表示される
             removeAndRecycleView(getTopView(), recycler);
-
-            final Direction direction = state.getDirection();
 
             state.next(state.status.toAnimatedStatus());
             state.topPosition++;
@@ -599,7 +613,30 @@ public class CardStackLayoutManager
         if (swipeThreshold < 0.0f || 1.0f < swipeThreshold) {
             throw new IllegalArgumentException("SwipeThreshold must be 0.0f to 1.0f.");
         }
-        setting.swipeThreshold = swipeThreshold;
+        setting.leftSwipeThreshold = swipeThreshold;
+        setting.rightSwipeThreshold = swipeThreshold;
+        setting.verticaltSwipeThreshold = swipeThreshold;
+    }
+
+    public void setLeftSwipeThreshold(@FloatRange(from = 0.0f, to = 1.0f) float swipeThreshold) {
+        if (swipeThreshold < 0.0f || 1.0f < swipeThreshold) {
+            throw new IllegalArgumentException("SwipeThreshold must be 0.0f to 1.0f.");
+        }
+        setting.leftSwipeThreshold = swipeThreshold;
+    }
+
+    public void setRightSwipeThreshold(@FloatRange(from = 0.0f, to = 1.0f) float swipeThreshold) {
+        if (swipeThreshold < 0.0f || 1.0f < swipeThreshold) {
+            throw new IllegalArgumentException("SwipeThreshold must be 0.0f to 1.0f.");
+        }
+        setting.rightSwipeThreshold = swipeThreshold;
+    }
+
+    public void setVerticalSwipeThreshold(@FloatRange(from = 0.0f, to = 1.0f) float swipeThreshold) {
+        if (swipeThreshold < 0.0f || 1.0f < swipeThreshold) {
+            throw new IllegalArgumentException("SwipeThreshold must be 0.0f to 1.0f.");
+        }
+        setting.verticaltSwipeThreshold = swipeThreshold;
     }
 
     public void setMaxDegree(@FloatRange(from = -360.0f, to = 360.0f) float maxDegree) {

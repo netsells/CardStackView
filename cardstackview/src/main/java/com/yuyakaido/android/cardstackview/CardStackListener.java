@@ -2,6 +2,8 @@ package com.yuyakaido.android.cardstackview;
 
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
 public interface CardStackListener {
     void onCardDragging(Direction direction, float ratio);
     void onCardSwiped(Direction direction);
@@ -9,6 +11,7 @@ public interface CardStackListener {
     void onCardCanceled();
     void onCardAppeared(View view, int position);
     void onCardDisappeared(View view, int position);
+    boolean shouldCardDismiss(int position, Direction direction);
 
     CardStackListener DEFAULT = new CardStackListener() {
         @Override
@@ -23,5 +26,9 @@ public interface CardStackListener {
         public void onCardAppeared(View view, int position) {}
         @Override
         public void onCardDisappeared(View view, int position) {}
+        @Override
+        public boolean shouldCardDismiss(int position, @NonNull Direction direction) {
+            return true;
+        }
     };
 }

@@ -135,7 +135,9 @@ public class CardStackSmoothScroller extends RecyclerView.SmoothScroller {
                 // Notify callback from CardStackLayoutManager
                 break;
             case ManualCancel:
-                listener.onCardCanceled();
+                if (!manager.freeze) {
+                    listener.onCardCanceled();
+                }
                 break;
         }
     }
