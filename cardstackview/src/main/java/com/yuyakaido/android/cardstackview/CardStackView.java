@@ -4,11 +4,12 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.yuyakaido.android.cardstackview.internal.CardStackDataObserver;
 import com.yuyakaido.android.cardstackview.internal.CardStackSnapHelper;
+import com.yuyakaido.android.cardstackview.internal.CardStackState;
+
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class CardStackView extends RecyclerView {
 
@@ -51,10 +52,32 @@ public class CardStackView extends RecyclerView {
         super.setAdapter(adapter);
     }
 
+    private boolean freeze = false;
+
+    public void freeze() {
+        freeze = true;
+    }
+
+    public void unfreeze() {
+        freeze = false;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        if (freeze) {
+            return false;
+        }
+        return super.onTouchEvent(e);
+    }
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
+        if (freeze) {
+            return false;
+        }
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             CardStackLayoutManager manager = (CardStackLayoutManager) getLayoutManager();
+
             if (manager != null) {
                 manager.updateProportion(event.getX(), event.getY());
             }
@@ -79,6 +102,29 @@ public class CardStackView extends RecyclerView {
     private void initialize() {
         new CardStackSnapHelper().attachToRecyclerView(this);
         setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
+    }
+
+    public void resetRightScroll() {
+        if (getLayoutManager() instanceof CardStackLayoutManager) {
+            CardStackLayoutManager manager = (CardStackLayoutManager) getLayoutManager();
+            manager.state.next(CardStackState.Status.Idle);
+            manager.state.proportion = 0.0f;
+            manager.state.targetPosition = manager.getTopPosition();
+            smoothScrollBy(manager.state.dx, manager.state.dy);
+        }
+    }
+
+    public void completeRightScroll() {
+        if (getLayoutManager() instanceof CardStackLayoutManager) {
+            CardStackLayoutManager manager = (CardStackLayoutManager) getLayoutManager();
+            manager.state.next(CardStackState.Status.Idle);
+            manager.state.proportion = 0.0f;
+            manager.state.targetPosition = manager.getTopPosition();
+
+            int dx = manager.state.width - Math.abs(manager.state.dx);
+            int dy = Math.abs(manager.state.dy) * 2;
+            smoothScrollBy(-dx, -dy);
+        }
     }
 
 }

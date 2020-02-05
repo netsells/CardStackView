@@ -7,17 +7,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 
-import androidx.annotation.FloatRange;
-import androidx.annotation.IntRange;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.yuyakaido.android.cardstackview.internal.CardStackSetting;
 import com.yuyakaido.android.cardstackview.internal.CardStackSmoothScroller;
 import com.yuyakaido.android.cardstackview.internal.CardStackState;
 import com.yuyakaido.android.cardstackview.internal.DisplayUtil;
 
 import java.util.List;
+
+import androidx.annotation.FloatRange;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class CardStackLayoutManager
         extends RecyclerView.LayoutManager
@@ -27,9 +27,7 @@ public class CardStackLayoutManager
 
     private CardStackListener listener = CardStackListener.DEFAULT;
     private CardStackSetting setting = new CardStackSetting();
-    private CardStackState state = new CardStackState();
-
-    public boolean freeze = false;
+    protected CardStackState state = new CardStackState();
 
     public CardStackLayoutManager(Context context) {
         this(context, CardStackListener.DEFAULT);
@@ -72,10 +70,6 @@ public class CardStackLayoutManager
     @Override
     public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State s) {
         if (state.topPosition == getItemCount()) {
-            return 0;
-        }
-
-        if (freeze) {
             return 0;
         }
 
@@ -124,10 +118,6 @@ public class CardStackLayoutManager
     @Override
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State s) {
         if (state.topPosition == getItemCount()) {
-            return 0;
-        }
-
-        if (freeze) {
             return 0;
         }
 
