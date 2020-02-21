@@ -117,14 +117,8 @@ public class CardStackView extends RecyclerView {
     public void completeRightScroll() {
         if (getLayoutManager() instanceof CardStackLayoutManager) {
             CardStackLayoutManager manager = (CardStackLayoutManager) getLayoutManager();
-            manager.state.next(CardStackState.Status.Idle);
-            manager.state.proportion = 0.0f;
-            manager.state.targetPosition = manager.getTopPosition();
-
-            int dx = manager.state.width - Math.abs(manager.state.dx);
-            int dy = Math.abs(manager.state.dy) * 2;
-            smoothScrollBy(-dx, -dy);
+            manager.state.targetPosition = manager.getTopPosition() + 1;
+            manager.onScrollStateChanged(RecyclerView.SCROLL_STATE_IDLE);
         }
     }
-
 }
